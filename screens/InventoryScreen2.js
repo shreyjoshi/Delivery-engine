@@ -9,75 +9,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {SearchBar} from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { ScrollView } from 'react-native-gesture-handler';
-import { setProductList,setInventoryList} from '../redux/appRedux'
+import { setProductList} from '../redux/appRedux'
 
-
-const list = [
-  { 
-    title: 'Non Veg Biryanis', 
-    data: 'Biryani also known as biriyani, biriani, birani or briyani, is a mixed rice dish with its origins among the Muslims of the Indian subcontinent. This dish is especially popular throughout the Indian subcontinent, as well as among the diaspora from the region. It is also prepared in other regions such as Iraqi Kurdistan.',
-    itemsList :[
-      {  id:1,
-         name: 'itemOne',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "42mins"
-      },
-      {  id:2,
-         name: 'itemSecond',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "45mins",
-       },
-     ]
-  },
-  { 
-    title: 'Pizzas',
-    data: 'Pizza is a savory dish of Italian origin, consisting of a usually round, flattened base of leavened wheat-based dough topped with tomatoes, cheese, and various other ingredients (anchovies, olives, meat, etc.) baked at a high temperature, traditionally in a wood-fired oven. In formal settings, like a restaurant, pizza is eaten with knife and fork, but in casual settings it is cut into wedges to be eaten while held in the hand. Small pizzas are sometimes called pizzettas.',
-    itemsList:[
-      {  id:1,
-         name: 'itemOne',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "42mins"
-      },
-      {  id:2,
-         name: 'itemSecond',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "45mins",
-       },
-     ]
-  },
-  { 
-   title: 'Drinks',
-   data: 'A drink (or beverage) is a liquid intended for human consumption. In addition to their basic function of satisfying thirst, drinks play important roles in human culture. Common types of drinks include plain drinking water, milk, coffee, tea, hot chocolate, juice and soft drinks. In addition, alcoholic drinks such as wine, beer, and liquor, which contain the drug ethanol, have been part of human culture for more than 8,000 years.',
-   itemsList:[
-    {  id:1,
-       name: 'itemOne',
-       avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-       deliveryTime: "42mins"
-    },
-    {  id:2,
-       name: 'itemSecond',
-       avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-       deliveryTime: "45mins",
-     },
-   ]
-  },
-  { 
-    title: 'Deserts',
-    data: 'A dessert is typically the sweet course that concludes a meal in the culture of many countries, particularly Western culture. The course usually consists of sweet foods, but may include other items. The word "dessert" originated from the French word desservir "to clear the table" and the negative of the Latin word servire',
-    itemsList:[
-      {  id:1,
-         name: 'itemOne',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "42mins"
-      },
-      {  id:2,
-         name: 'itemSecond',
-         avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "45mins",
-       },
-     ]
-  },
-];
 
 
 export default function App() {
@@ -103,23 +36,34 @@ export default function App() {
     });
   }
   useEffect(() => {
-    console.log("state.userInfo",state.userInfo);
-      console.log("abc");
-      console.log("token",token);
-      setToken({token});
-      fetch("https://www.grocyshop.in/api/v1/product/getAllProduct",{
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        'Authorization': 'Bearer ' + state.userInfo.token,
-        "Access-Control-Allow-Origin": "http://localhost:5000",
-      }})
-      .then((response)=>{
-        if(!response.ok) throw new Error(response.status);
-        else return response.json();
-        }).then((response)=>{
-          console.log("response",response);
-          var temp  = {};
+      console.log("in inventory2");
+    let stateProductList = state.products;
+    let stateInventoryList = state.inventory;
+    var response = [];
+    for(var key in stateProductList){
+        var catItemList = stateProductList[key];
+        console.log("catItemList",catItemList);
+        console.log("stateInventoryList",stateInventoryList,"stateInventoryList.length",stateInventoryList.length);
+        for(var j=0;j<catItemList.length;j++){
+            for(var i = 0;i<stateInventoryList.length;i++){
+                console.log('catItemList[j]["id"]',catItemList[j]["id"]);
+                console.log('stateInventoryList[i]["product_id"]',stateInventoryList[i]["product_id"]);
+                if(stateInventoryList[i]["product_id"] == catItemList[j]["id"]){
+                    console.log("in if 1");
+                    if(stateInventoryList[i]["retailer_id"] == "RET_000001"){
+                        console.log("in if 2");
+                        var temp_product = catItemList[j];
+                        temp_product["added"] = true;
+                        temp_product["inventory_obj"] = stateInventoryList[i];
+                        response.push(temp_product);
+                        break;
+                    }
+                }
+                    
+            }
+        }
+    }
+    var temp  = {};
           var productsList = [];
 
           for(var i = 0;i<response.length;i++){
@@ -156,28 +100,7 @@ export default function App() {
                 console.log(stringProd);
               }
             }
-          
-          dispatch(setProductList(temp));
-          console.log(temp);
-          var productsList = [];
-        
-        }).catch((e)=>{(console.log(e))})
-
-
-        fetch("https://www.grocyshop.in/api/v1/retailer/getAllInventory",{
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            'Authorization': 'Bearer ' + state.userInfo.token,
-            "Access-Control-Allow-Origin": "http://localhost:5000",
-          }})
-          .then((response)=>{
-            if(!response.ok) throw new Error(response.status);
-            else return response.json();
-            }).then((response)=>{
-              dispatch(setInventoryList(response));
-            }).catch((e)=>{(console.log(e))})
-
+    // console.log("tempList",tempList);
 
     console.log('mounted',token);
   
@@ -232,7 +155,6 @@ export default function App() {
         onChangeText={setSearchState}
         value={search}
       />
-    <Text>:->{stringProd}</Text>
     {productsList && productsList.length && productsList.map((l, i) => (
       <Accordian 
                 title = {l.category}

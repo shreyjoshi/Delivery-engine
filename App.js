@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View,Text } from 'react-native';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer,DefaultTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import MainScreen from './screens/MainScreen';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
+import { Provider as StoreProvider } from 'react-redux'
+import store from './redux/store'
+import AppContainer from './navigation'
+import AuthNavigation from './navigation/AuthNavigator'
+
+
 
 const Stack = createStackNavigator();
 
@@ -47,14 +53,50 @@ export default function App(props) {
     return null;
   } else {
     return (
+      <StoreProvider store={store}>
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+        {/* <NavigationContainer  ref={containerRef} initialState={initialNavigationState}>
+        <Stack.Navigator>
+        <Stack.Screen name="Dashboard" component = {AuthNavigation}
+              options={{
+                headerStyle: {
+                  backgroundColor: '#f4511e',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            /> */}
+        {/* <AppContainer/> */}
+        {/* </Stack.Navigator> */}
+
+      {/* </NavigationContainer>  */}
+
+        <NavigationContainer  ref={containerRef} initialState={initialNavigationState}>
           <Stack.Navigator>
+          <Stack.Screen name="Dashboard" component = {AuthNavigation}
+              // header = "none"
+              // navigationOptions= {{
+              //   header: null}}
+            
+              options={{headerMode: 'none', headerShown : false}}
+              //   headerStyle: {
+              //     backgroundColor: '#f4511e',
+              //   },
+              //   headerTintColor: '#fff',
+              //   headerTitleStyle: {
+              //     fontWeight: 'bold',
+              //   },
+              // }}
+            />
             <Stack.Screen name="Root" component={BottomTabNavigator} />
+            
           </Stack.Navigator>
         </NavigationContainer>
       </View>
+      </StoreProvider>
     );
   }
 }
@@ -62,6 +104,16 @@ export default function App(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+
     backgroundColor: '#fff',
   },
 });
+
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: 'rgb(255, 45, 85)',
+  },
+};

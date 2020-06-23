@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage } from 'react-native';
+import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView } from 'react-native';
 import Constants from 'expo-constants';
 import CardLayout from '../components/CardLayout';
 import TabBarIcon from '../components/TabBarIcon';
@@ -9,8 +9,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {SearchBar} from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import { ScrollView } from 'react-native-gesture-handler';
-import { setProductList,setInventoryList} from '../redux/appRedux'
-
 
 const list = [
   { 
@@ -20,12 +18,14 @@ const list = [
       {  id:1,
          name: 'itemOne',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
-         deliveryTime: "42mins"
+         deliveryTime: "42mins",
+         added:true,
       },
       {  id:2,
          name: 'itemSecond',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
          deliveryTime: "45mins",
+         added:true,
        },
      ]
   },
@@ -36,11 +36,13 @@ const list = [
       {  id:1,
          name: 'itemOne',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+         added:true,
          deliveryTime: "42mins"
       },
       {  id:2,
          name: 'itemSecond',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+         added:true,
          deliveryTime: "45mins",
        },
      ]
@@ -57,6 +59,7 @@ const list = [
     {  id:2,
        name: 'itemSecond',
        avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+       added:true,
        deliveryTime: "45mins",
      },
    ]
@@ -68,11 +71,13 @@ const list = [
       {  id:1,
          name: 'itemOne',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+         added:true,
          deliveryTime: "42mins"
       },
       {  id:2,
          name: 'itemSecond',
          avatar: 'https://s3.amazonaws.com/uifaces/faces/twitter/brynn/128.jpg',
+         added:true,
          deliveryTime: "45mins",
        },
      ]
@@ -85,12 +90,7 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [activeSelector,setActiveSelector]  = useState(null);
   const [search,setSearchState] = useState('');
-  const [token,setToken] = useState(null);
   const state = useSelector(state => state)
-  const dispatch = useDispatch()
-  const [productsList,setProductsList] = useState(null);
-  const [stringProd,setStringProd] = useState('');
-
   const users = [
    {
       name: 'brynn',
@@ -102,87 +102,6 @@ export default function App() {
       [key]: value,
     });
   }
-  useEffect(() => {
-    console.log("state.userInfo",state.userInfo);
-      console.log("abc");
-      console.log("token",token);
-      setToken({token});
-      fetch("https://www.grocyshop.in/api/v1/product/getAllProduct",{
-      method: "GET",
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-        'Authorization': 'Bearer ' + state.userInfo.token,
-        "Access-Control-Allow-Origin": "http://localhost:5000",
-      }})
-      .then((response)=>{
-        if(!response.ok) throw new Error(response.status);
-        else return response.json();
-        }).then((response)=>{
-          console.log("response",response);
-          var temp  = {};
-          var productsList = [];
-
-          for(var i = 0;i<response.length;i++){
-            var category = response[i]["category"];
-            if(temp[category] == undefined || temp[category].length==0)
-              {
-                temp[response[i]["category"]]=[];
-              }
-              console.log("-->i");
-              console.log(response[i]);
-              temp[category].push(response[i]);
-              console.log('temp[response[i]["category"]]');
-              console.log(temp[category]);
-              if(i==response.length-1){
-                // temp = JSON.parse(temp);
-                console.log("temp123",JSON.stringify(temp));
-                for (var key in temp) {
-                  // if(temp.hasOwnProperty(key)){
-                  console.log("key1",key,temp[key]);
-                    var val = temp[key];
-                    console.log("key",key);
-                    console.log("var",val);
-                    var temp_var = {};
-                    temp_var.category  = key;
-                    temp_var.itemsList = val
-                    productsList.push(temp_var);
-                  // }
-      
-                }
-                console.log("productsList",productsList);
-                setProductsList(productsList);
-                var stringTemp = JSON.stringify(productsList);
-                setStringProd(stringTemp);
-                console.log(stringProd);
-              }
-            }
-          
-          dispatch(setProductList(temp));
-          console.log(temp);
-          var productsList = [];
-        
-        }).catch((e)=>{(console.log(e))})
-
-
-        fetch("https://www.grocyshop.in/api/v1/retailer/getAllInventory",{
-          method: "GET",
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            'Authorization': 'Bearer ' + state.userInfo.token,
-            "Access-Control-Allow-Origin": "http://localhost:5000",
-          }})
-          .then((response)=>{
-            if(!response.ok) throw new Error(response.status);
-            else return response.json();
-            }).then((response)=>{
-              dispatch(setInventoryList(response));
-            }).catch((e)=>{(console.log(e))})
-
-
-    console.log('mounted',token);
-  
-  }, []);
-
   const updateSearch = search => {
     console.log("e.target.value",search)
     setSearchState({ search });
@@ -232,17 +151,17 @@ export default function App() {
         onChangeText={setSearchState}
         value={search}
       />
-    <Text>:->{stringProd}</Text>
-    {productsList && productsList.length && productsList.map((l, i) => (
+    {list.map((l, i) => (
       <Accordian 
-                title = {l.category}
+                title = {l.title}
                 data = {l.data}
                 itemsList = {l.itemsList}
                 key = {i}
-                keyValue = {i.toString()}
+                
       />
       ))
       }
+    <Text style={styles.paragraph}>{text}</Text>
 
     </ScrollView>
     </SafeAreaView>
@@ -261,7 +180,7 @@ const styles = StyleSheet.create({
   scrollView: {
     width:'100%',
 
-    backgroundColor: '#fff',
+    backgroundColor: 'pink',
     marginHorizontal: 20,
   },
   contentContainer: {

@@ -1,41 +1,77 @@
-import React from 'react';
-import { TextInput, Button, StyleSheet, Text, View,Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { TextInput, Button, StyleSheet, Text, View,Image,AsyncStorage } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux'
+import { addnote, deletenote ,addCategory,addUserToken} from '../redux/appRedux'
+import { startAsync } from 'expo/build/AR';
 
 // import { Auth } from 'aws-amplify';
+export default function Login(props) {
+  const dispatch = useDispatch()
 
-export default class App extends React.Component {
-  state = {
-    username: '',
-    password: '',
-    confirmationCode: '',
-    user: {},
-  };
-  onChangeText(key, value) {
+  const onChangeText =function(key, value) {
     this.setState({
       [key]: value,
     });
   }
-  signIn() {
-    const { username, password } = this.state;
-    // Auth.signIn(username, password)
-    //   .then(user => {
-    //     this.setState({ user });
-    //     console.log('successful sign in!');
-    //   })
-    //   .catch(err => console.log('error signing in!: ', err));
+  const state = useSelector(state => state)
+
+  // const addNote =  note =>
+
+  useEffect (() =>{
+    if(state.userInfo.token && state.userInfo.token!='')
+      {
+        async () => {
+          try {
+            await AsyncStorage.setItem('token',state.userInfo.token );
+            props.navigation.navigate('Root');
+
+          } catch (error) {
+            // Error saving data
+          }
+        };
+      }
+  })
+
+  const signIn = function() {
+    // const { username, password } = this.state;
+    // this.setState({userName:this.state.username});
+    // dispatch(addCategory(1))
+    // props.navigation.navigate('Root')
+    console.log("props.app_state1",JSON.stringify(state));
+
+    var reqObj = {};
+    reqObj.username = "test";
+    reqObj.password = "test";
+    fetch("https://www.grocyshop.in/authenticate",{
+      method: "POST",
+      body:JSON.stringify(reqObj),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+        "Access-Control-Allow-Origin": "http://localhost:5000",
+      }})
+      .then((response)=>{
+        if(!response.ok) throw new Error(response.status);
+        else return response.json();
+        }).then((response)=>{
+          console.log("response",response);
+          dispatch(addUserToken(response))
+          dispatch(deletenote(1));
+          // console.log("props.app_state",JSON.stringify(state.userInfo));
+          // const state1 = useSelector(state => state)
+          console.log("props.app_state",JSON.stringify(state));
+               AsyncStorage.setItem('token',response.token );
+              props.navigation.navigate('Root');
+  
+          
+
+        }).catch((e)=>{(console.log(e))})
+           console.log("this.props.navigation",props.navigation);
   }
-  confirmSignIn() {
-    // Auth.confirmSignIn(this.state.user, this.state.confirmationCode)
-    //   .then(() => {
-    //     console.log('successful confirm sign in!');
-    //     this.props.screenProps.authenticate(true);
-    //   })
-    //   .catch(err => console.log('error confirming signing in!: ', err));
-  }
-  render() {
+  
     return (
       <View style={styles.container}>
-      <Image style={styles.image} source = {{uri:'https://upload.wikimedia.org/wikipedia/commons/5/55/Emart_Logo.svg'}} />
+      <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
+        
         <TextInput
           onChangeText={value => this.onChangeText('username', value)}
           style={styles.input}
@@ -48,32 +84,34 @@ export default class App extends React.Component {
           placeholder="password"
         />
         <View style= {styles.inputButton}>
-        <Button style={styles.inputButton} title="Sign In" onPress={this.signIn.bind(this)} />
+        <Button style={styles.inputButton} title="Sign In" onPress={signIn} />
+        </View>
         <TextInput
           onChangeText={value => this.onChangeText('confirmationCode', value)}
           style={styles.input}
           placeholder="confirmation Code"
         />
+        <View style= {styles.inputButton}>
         <Button style
           title="Confirm Sign In"
-          onPress={this.confirmSignIn.bind(this)}
+          onPress={() => signIn()}
         />
         </View>
+
       </View>
     );
-  }
 }
 
 const styles = StyleSheet.create({
   input: {
     height: 50,
-
+    paddingLeft:50,
     width:500,
     margin: 10,
   },
   inputButton: {
     height: 50,
-    width:'55%',
+    width:400,
     margin: 10,
   },
   image:{
@@ -84,9 +122,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingLeft:500,
     backgroundColor: '#fff',
     justifyContent: 'center',
+    alignItems:'center',
     padding: 16,
   },
 });
