@@ -14,10 +14,9 @@ export default function(containerRef) {
       Root: {
         path: 'root',
         screens: {
-          Home: 'home',
-          Links: 'links',
-          Settings: 'settings',
-          Dashboard: 'dashboard'
+          Products: 'products',
+          Inventory: 'inventory',
+          Notification: 'orders'
         },
       },
     },

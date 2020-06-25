@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage } from 'react-native';
+import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage,Image } from 'react-native';
 import Constants from 'expo-constants';
 import CardLayout from '../components/CardLayout';
 import TabBarIcon from '../components/TabBarIcon';
@@ -80,7 +80,7 @@ const list = [
 ];
 
 
-export default function App() {
+export default function App(props) {
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [activeSelector,setActiveSelector]  = useState(null);
@@ -103,6 +103,10 @@ export default function App() {
     });
   }
   useEffect(() => {
+    // if(state.userInfo== undefined ||state.userInfo.token==undefined|| state.userInfo.token==''){
+    //   console.log("here");
+    //   props.navigation.navigation("Log");
+    // }
     console.log("state.userInfo",state.userInfo);
       console.log("abc");
       console.log("token",token);
@@ -175,6 +179,7 @@ export default function App() {
             if(!response.ok) throw new Error(response.status);
             else return response.json();
             }).then((response)=>{
+              console.log("in inventory response",response)
               dispatch(setInventoryList(response));
             }).catch((e)=>{(console.log(e))})
 
@@ -232,7 +237,13 @@ export default function App() {
         onChangeText={setSearchState}
         value={search}
       />
-    <Text>:->{stringProd}</Text>
+    {/* <Text>:->{stringProd}</Text> */}
+    {(productsList==undefined || productsList.length<1) && 
+      <View style={styles.container}>
+      <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
+      <Text style={{color:'red',fontWeight:"400"}}> Check Network or No Item Available</Text>
+      </View>
+    }
     {productsList && productsList.length && productsList.map((l, i) => (
       <Accordian 
                 title = {l.category}

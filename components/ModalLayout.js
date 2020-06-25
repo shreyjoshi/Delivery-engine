@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text,View,  Alert,
+import { Text,View,  Alert,Platform,
   Modal,
   StyleSheet,
   TouchableHighlight,TextInput,Button } from 'react-native';
@@ -10,6 +10,7 @@ export default function ModalLayout(props) {
   const [sellPrice,setSellPrice] = useState(0);
   const [platformPrice,setPlatformPrice] = useState(0);
   useEffect(() => {
+    console.log('props["item"]["invObj"]',props["item"]["invObj"]);
     var sellPrice = props["item"]["invObj"] ? +props["item"]["invObj"]["sellingPrice"]:0;
     setSellPrice(sellPrice);
     var platformPrice = props["item"]["invObj"] ? props["item"]["invObj"]["priceToPlatform"]:0;
@@ -40,11 +41,12 @@ return(
           style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
           onPress={() => {
             console.log("this.modalVisible"+props.modalVisible);
-
+            setSellPrice(0);
+            setPlatformPrice(0);
             props.setModalVisible(!props.modalVisible);
           }}
         >
-          <Text style={styles.textStyle}>Hide Modal</Text>
+          <Text style={styles.textStyle, {height: Platform.OS == 'android' ? 40 : 20}}>Hide</Text>
         </TouchableHighlight>
 
         <Text style={styles.modalProductText}>{props.item.productName}</Text>
@@ -54,32 +56,45 @@ return(
         <Text style={{textAlign:'left'}}>Selling Price:</Text>
         <TextInput
           onChangeText={value => onChangeText('sellPrice', value)}
-          style={styles.input}
+          style={styles.input,{height: Platform.OS == 'android' ? 40 : 20}}
           placeholder="Selling Price"
           keyboardType = 'numeric'
-          value = {sellPrice}
+          value = {sellPrice.toString()}
         />
         <Text style={{textAlign:'left'}}>Platform Cost:</Text>
         <TextInput
           onChangeText={value => onChangeText('platformPrice', value)}
-          style={styles.input}
+          style={styles.input,{height: Platform.OS == 'android' ? 40 : 20}}
           placeholder="Platform Cost"
           keyboardType = 'numeric'
-          value = {platformPrice}
+          value = {platformPrice.toString()}
 
         />
         <View style= {styles.inputButton}>
         <Button style={{marginBottom:50}} title="Add" onPress={() => {
             console.log("this.modalVisible"+props.modalVisible);
-
+            console.log('props["item"]',props["item"]);
+            var reqBody = {};
+            reqBody.product_id = props["item"]["id"];
+            reqBody.priceToPlatform = platformPrice;
+            reqBody.sellingPrice = sellPrice;
+            reqBody.quantity = 1000;
+            reqBody.retailer_id = "RET_000001";
+            if(props["item"]["invObj"] && props["item"]["invObj"]["inventoryId"])
+              reqBody.inventoryId = props["item"]["invObj"]["inventoryId"];
+            props.updateInventory(reqBody);
+            setSellPrice(0);
+            setPlatformPrice(0);
             props.setModalVisible(!props.modalVisible);
+            
           }} />
         </View>  
         {/* <Spacer size={10} /> */}
         <View  style= {styles.inputButton}>
         <Button style={{marginTop:50}} title="Close" onPress={() => {
             console.log("this.modalVisible"+props.modalVisible);
-
+            setSellPrice(0);
+            setPlatformPrice(0);
             props.setModalVisible(!props.modalVisible);
           }} />
         
@@ -137,17 +152,16 @@ const styles = StyleSheet.create({
   },
   modalProductText:{
     marginBottom: 15,
-    marginTop: 15,
+    marginTop: 20,
     textAlign: "center",
-    fontWeight:'bold',
+    fontWeight:'400',
     color:'red',
-    fontSize:15
+    fontSize:18
   },
   modalCategoryText:{
-    marginBottom: 15,
+    marginBottom: 25,
     marginTop: 5,
     textAlign: "center",
-    color:'red',
     fontSize:13
   },
   input: {

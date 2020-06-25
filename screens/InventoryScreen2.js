@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage } from 'react-native';
+import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage,Image } from 'react-native';
 import Constants from 'expo-constants';
 import CardLayout from '../components/CardLayout';
 import TabBarIcon from '../components/TabBarIcon';
@@ -155,6 +155,12 @@ export default function App() {
         onChangeText={setSearchState}
         value={search}
       />
+    {(productsList==undefined || productsList.length<1) && 
+      <View style={styles.container}>
+      <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
+      <Text style={{color:'red',fontWeight:"400"}}> Check Network or No Item Available</Text>
+      </View>
+    }
     {productsList && productsList.length && productsList.map((l, i) => (
       <Accordian 
                 title = {l.category}

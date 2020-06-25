@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextInput, Button, StyleSheet, Text, View,Image,AsyncStorage } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
 import { addnote, deletenote ,addCategory,addUserToken} from '../redux/appRedux'
@@ -7,11 +7,14 @@ import { startAsync } from 'expo/build/AR';
 // import { Auth } from 'aws-amplify';
 export default function Login(props) {
   const dispatch = useDispatch()
+  const [userName,setUserName] = useState('');
+  const [password,setPassword] = useState('');
 
   const onChangeText =function(key, value) {
-    this.setState({
-      [key]: value,
-    });
+    if(key =="username")
+      setUserName(value);
+    else if(key == "password")
+      setPassword(value);
   }
   const state = useSelector(state => state)
 
@@ -73,20 +76,22 @@ export default function Login(props) {
       <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
         
         <TextInput
-          onChangeText={value => this.onChangeText('username', value)}
+          onChangeText={value => onChangeText('username', value)}
           style={styles.input}
           placeholder="username"
+          value = {userName}
         />
         <TextInput
-          onChangeText={value => this.onChangeText('password', value)}
+          onChangeText={value => onChangeText('password', value)}
           style={styles.input}
+          value = {password}
           secureTextEntry={true}
           placeholder="password"
         />
         <View style= {styles.inputButton}>
         <Button style={styles.inputButton} title="Sign In" onPress={signIn} />
         </View>
-        <TextInput
+        {/* <TextInput
           onChangeText={value => this.onChangeText('confirmationCode', value)}
           style={styles.input}
           placeholder="confirmation Code"
@@ -96,7 +101,7 @@ export default function Login(props) {
           title="Confirm Sign In"
           onPress={() => signIn()}
         />
-        </View>
+        </View> */}
 
       </View>
     );

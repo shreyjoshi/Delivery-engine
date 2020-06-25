@@ -9,10 +9,10 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/GSLogoMain (S).png",
+    "icon": "./assets/images/GSLogoPartnerM.png",
     "scheme": "myapp",
     "splash": {
-      "image": "./assets/images/GSLogoMain (M).png",
+      "image": "./assets/images/GSLogoPartnerM.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

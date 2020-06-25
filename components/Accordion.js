@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet, LayoutAnimation, Platform, UI
 // import { Colors } from './Colors';
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CardLayout from './CardLayout';
+import OrderCardLayout from './OrderCardLayout';
 
 export default class Accordian extends Component{
 
@@ -23,8 +24,29 @@ export default class Accordian extends Component{
     
   
   render() {
-      
+    if(this.props.typeOrders){
+        return (
+        
+            <View style={styles.container}>
+                 <TouchableOpacity ref={this.accordian} style={styles.row} onPress={()=>this.toggleExpand()}>
+                     <Text style={[styles.title, styles.font]}>{this.props.title.toUpperCase()}</Text>
+                     <Icon name={this.state.expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} size={30}  />
+                 </TouchableOpacity>
+                 <View style={styles.parentHr}/>
+                 {
+                     this.state.expanded &&
+                     <View style={styles.child}>
+                         <OrderCardLayout
+                         itemsList = {this.props.itemsList}   
+                         /> 
+                     </View>
+                 }
+                 
+            </View>
+         )
+    }
     return (
+        
        <View style={styles.container}>
             <TouchableOpacity ref={this.accordian} style={styles.row} onPress={()=>this.toggleExpand()}>
                 <Text style={[styles.title, styles.font]}>{this.props.title.toUpperCase()}</Text>

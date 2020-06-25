@@ -5,7 +5,7 @@ import { Text,View,  Alert,
   TouchableHighlight,SafeAreaView,FlatList,Platform } from 'react-native';
 import ModalLayout from './ModalLayout';
 import { Card, ListItem, Button, Icon,SearchBar } from 'react-native-elements'
-import { deletenote, ADD_PRODUCT_LIST } from '../redux/appRedux';
+import { deletenote, ADD_PRODUCT_LIST ,addInventory,deleteInventory} from '../redux/appRedux';
 import { useSelector, useDispatch } from 'react-redux'
 
 
@@ -42,7 +42,7 @@ export default function CardLayout(props) {
     console.log("param",itemObj);
     var stateInvList = state.inventory;
     for(var i = 0;i<stateInvList.length;i++){
-      if(stateInvList[i]["product_id"] = itemObj["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
+      if(stateInvList[i]["product_id"] == itemObj["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
         itemObj["invObj"] = stateInvList[i];
         setItemState(itemObj);
         break;
@@ -58,23 +58,78 @@ export default function CardLayout(props) {
       if(!checked)
         setState({checked:false});
   }
-  const cancelItem = function(itemObj){
-    alert("Are you sure to remove the selected Item:"+itemObj.name);
-    dispatch(deletenote(1));
+
+  const updateInventory = function(obj){
+    if(obj.inventoryId==undefined){
+      fetch("https://www.grocyshop.in/api/v1/retailer/createInventory",{
+          method: "POST",
+          body:JSON.stringify(obj),
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            'Authorization': 'Bearer ' + state.userInfo.token,
+            "Access-Control-Allow-Origin": "http://localhost:5000",
+          }})
+          .then((response)=>{
+            if(!response.ok) throw new Error(response.status);
+            else return response.json();
+            }).then((response)=>{
+              console.log("in inventory response",response)
+              dispatch(addInventory(response));
+            }).catch((e)=>{(console.log(e))})
+    }
+  }
+
+  const deleteInvItem = function(itemObj){
+    console.log("itemObj delete",itemObj)
+    alert("Are you sure to remove the selected Item:"+itemObj.productName);
+    fetch("https://www.grocyshop.in/api/v1/retailer/deleteInventory/"+itemObj.invObj.inventoryId,{
+          method: "GET",
+          headers: {
+            'Authorization': 'Bearer ' + state.userInfo.token,
+            "Access-Control-Allow-Origin": "http://localhost:5000",
+          }})
+          .then((response)=>{
+            if(!response.ok) throw new Error(response.status);
+            else return "a"
+            }).then((response)=>{
+              console.log("in inventory response",response)
+              // 
+            }).catch((e)=>{(console.log(e))})
+      dispatch(deleteInventory(itemObj.invObj.inventoryId));      
+                   console.log(state.inventory)
+
+      // headers: {
+          //   "Content-type": "application/json; charset=UTF-8",
+          //   'Authorization': 'Bearer ' + state.userInfo.token,
+          //   "Access-Control-Allow-Origin": "*",
+          // }})
+          // .then((response)=>{
+          //   // if(!response.ok) throw new Error(response.status);
+          //     console.log("response ok");
+          //     dispatch(deleteInventory(itemObj.invObj.inventoryId));
+          //     console.log(state.inventory)
+          //   })
+          //   // .catch((e)=>{(console.log(e))})
+    // dispatch(deletenote(1));
   }
   const ListRender = function(l,i){
     var stateInvList = state.inventory;
+    console.log("Rerender");
+    console.log("stateInvList",stateInvList);
     for(var i = 0;i<stateInvList.length;i++){
       if(stateInvList[i]["product_id"] == l["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
         l["invObj"] = stateInvList[i];
         l["added"] = true;
         break;
       }
+      else if(l["added"]==true){
+        l.added = false;
+      }
     
     }
     if(l.added == true)
     return(<ListItem
-      containerStyle={{alignSelf: 'flex-start',textAlign: 'top',width:'100%'}}
+      containerStyle={{width:'100%'}}
       contentContainerStyle = {{width:1200}}
       key={l.id}
       leftAvatar={{ source: { uri: "https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(S).png" },rounded:false }}
@@ -82,14 +137,14 @@ export default function CardLayout(props) {
       titleStyle = {{marginLeft:5,marginBottom:5}}
       component={TouchableHighlight}
       subtitle={<Text style={{marginTop:2,marginLeft:5,fontWeight:"200"}}>{l.details}</Text>}
-      rightSubtitle={<Text style={{marginTop:2,marginRight:15,fontWeight:"200"}}>{l.measurementUnit}</Text>}
+      rightSubtitle={<Text style={{marginTop:2,marginRight:15,fontWeight:"200"}}>{l.measurementUnit+" "}</Text>}
       bottomDivider
       checkBox= {{ // CheckBox Props
         checkedIcon: 'times',
         uncheckedIcon: 'times',
         checkedColor:'#cc0c23',
         uncheckedColor: '#fff',
-        onPress: () => this.press(item),
+        onPress: () => deleteInvItem(l),
         checked: true,
       }}
       onPress={() =>  
@@ -99,7 +154,7 @@ export default function CardLayout(props) {
     />);
     else  
     return(<ListItem
-      containerStyle={{alignSelf: 'flex-start',textAlign: 'top',width:'100%'}}
+      containerStyle={{width:'100%'}}
       contentContainerStyle = {{width:1200}}
       key={l.id}
       leftAvatar={{ source: { uri: "https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(S).png" },rounded:false }}
@@ -107,14 +162,14 @@ export default function CardLayout(props) {
       titleStyle = {{marginLeft:5,marginBottom:5}}
       component={TouchableHighlight}
       subtitle={<Text style={{marginTop:2,marginLeft:5,fontWeight:"200"}}>{l.details}</Text>}
-      rightSubtitle={<Text style={{marginTop:2,marginRight:15,fontWeight:"200"}}>{l.measurementUnit}</Text>}
+      rightSubtitle={<Text style={{marginTop:2,marginRight:15,fontWeight:"200"}}>{l.measurementUnit +" "}</Text>}
       bottomDivider
       checkBox= {{ // CheckBox Props
         checkedIcon: 'times',
         uncheckedIcon: 'times',
         checkedColor: '#fff',
         uncheckedColor: '#fff',
-        onPress: () => this.press(item),
+        onPress: () => console.log(''),
         checked: true,
         disabled:true
       }}
@@ -131,6 +186,7 @@ export default function CardLayout(props) {
     modalVisible={modalVisible}
     item={item}
     setModalVisible = {setModalVisible}
+    updateInventory = {updateInventory}
     />}
 
   {props.itemsList && 
