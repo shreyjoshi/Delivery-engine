@@ -1,13 +1,14 @@
 {
   "expo": {
-    "name": "eMart-cross",
-    "slug": "eMart-cross",
+    "name": "Grocy Shop Partner",
+    "description": "Grocy Shop retail partner Application",
+    "slug": "Grocy-Shop-Partner",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/GSLogoPartnerM.png",
     "scheme": "myapp",
@@ -15,6 +16,9 @@
       "image": "./assets/images/GSLogoPartnerM.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
+    },
+    "android": {
+      "package": "com.grocyshop.grocyshoppartner"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

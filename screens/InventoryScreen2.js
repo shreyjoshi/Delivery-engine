@@ -50,7 +50,7 @@ export default function App() {
                 console.log('stateInventoryList[i]["product_id"]',stateInventoryList[i]["product_id"]);
                 if(stateInventoryList[i]["product_id"] == catItemList[j]["id"]){
                     console.log("in if 1");
-                    if(stateInventoryList[i]["retailer_id"] == "RET_000001"){
+                    if(stateInventoryList[i]["retailer_id"] == state.userInfo.userId){
                         console.log("in if 2");
                         var temp_product = catItemList[j];
                         temp_product["added"] = true;

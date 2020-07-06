@@ -87,7 +87,7 @@ export default function CardLayout(props) {
   const ListRender = function(l,i){
     var stateInvList = state.inventory;
     for(var i = 0;i<stateInvList.length;i++){
-      if(stateInvList[i]["product_id"] == l["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
+      if(stateInvList[i]["product_id"] == l["id"] && stateInvList[i]["retailer_id"]==state.userInfo.userId){
         l["invObj"] = stateInvList[i];
         l["added"] = true;
         break;

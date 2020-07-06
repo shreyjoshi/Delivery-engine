@@ -42,7 +42,7 @@ export default function CardLayout(props) {
     console.log("param",itemObj);
     var stateInvList = state.inventory;
     for(var i = 0;i<stateInvList.length;i++){
-      if(stateInvList[i]["product_id"] == itemObj["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
+      if(stateInvList[i]["product_id"] == itemObj["id"] && stateInvList[i]["retailer_id"]==state.userInfo.userId){
         itemObj["invObj"] = stateInvList[i];
         setItemState(itemObj);
         break;
@@ -117,7 +117,7 @@ export default function CardLayout(props) {
     console.log("Rerender");
     console.log("stateInvList",stateInvList);
     for(var i = 0;i<stateInvList.length;i++){
-      if(stateInvList[i]["product_id"] == l["id"] && stateInvList[i]["retailer_id"]=="RET_000001"){
+      if(stateInvList[i]["product_id"] == l["id"] && stateInvList[i]["retailer_id"]==state.userInfo.userId){
         l["invObj"] = stateInvList[i];
         l["added"] = true;
         break;

@@ -11,6 +11,7 @@ export const ADD_INVENTORY_LIST = "ADD_INVENTORY_LIST"
 export const ADD_INVENTORY = "ADD_INVENTORY"
 export const UPDATE_INVENTORY = "UPDATE_INVENTORY"
 export const DELETE_INVENTORY = "DELETE_INVENTORY"
+export const ADD_USER_NAME = "ADD_USER_NAME"
 // Action Creators
 
 let noteID = 0;
@@ -45,6 +46,14 @@ export function addCategory(note){
     note
   }
 }
+
+export function addUserName(id){
+  return{
+    type:ADD_USER_NAME,
+    id:id
+  }
+}
+
 export function setInventoryList(id){
   return{
     type: ADD_INVENTORY_LIST,
@@ -119,7 +128,12 @@ function notesReducer(state = initialState, action) {
         ...state,
         inventory:action.id
       }
-    
+
+    case ADD_USER_NAME:
+      return{
+        ...state,
+        userInfo:{...state.userInfo,userId:action.id}
+      }
     case ADD_INVENTORY:
       console.log("added Inventory",action.id);
       return{

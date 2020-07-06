@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, Button, StyleSheet, Text, View,Image,AsyncStorage } from 'react-native';
+import { TextInput, Button, StyleSheet, View,Image,AsyncStorage } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux'
-import { addnote, deletenote ,addCategory,addUserToken} from '../redux/appRedux'
-import { startAsync } from 'expo/build/AR';
+import { addnote, deletenote ,addCategory,addUserToken,addUserName} from '../redux/appRedux'
 
-// import { Auth } from 'aws-amplify';
 export default function Login(props) {
   const dispatch = useDispatch()
   const [userName,setUserName] = useState('');
@@ -36,15 +34,15 @@ export default function Login(props) {
   })
 
   const signIn = function() {
-    // const { username, password } = this.state;
-    // this.setState({userName:this.state.username});
-    // dispatch(addCategory(1))
-    // props.navigation.navigate('Root')
     console.log("props.app_state1",JSON.stringify(state));
-
+    if(userName==undefined || userName == '' || password == undefined || password == '' ){
+      alert("Enter Valid Username/Password");
+      return;
+    }
     var reqObj = {};
     reqObj.username = "test";
     reqObj.password = "test";
+    props.navigation.navigate('Root');
     fetch("https://www.grocyshop.in/authenticate",{
       method: "POST",
       body:JSON.stringify(reqObj),
@@ -57,10 +55,9 @@ export default function Login(props) {
         else return response.json();
         }).then((response)=>{
           console.log("response",response);
+          dispatch(addUserName(userName))
           dispatch(addUserToken(response))
           dispatch(deletenote(1));
-          // console.log("props.app_state",JSON.stringify(state.userInfo));
-          // const state1 = useSelector(state => state)
           console.log("props.app_state",JSON.stringify(state));
                AsyncStorage.setItem('token',response.token );
               props.navigation.navigate('Root');
@@ -91,18 +88,6 @@ export default function Login(props) {
         <View style= {styles.inputButton}>
         <Button style={styles.inputButton} title="Sign In" onPress={signIn} />
         </View>
-        {/* <TextInput
-          onChangeText={value => this.onChangeText('confirmationCode', value)}
-          style={styles.input}
-          placeholder="confirmation Code"
-        />
-        <View style= {styles.inputButton}>
-        <Button style
-          title="Confirm Sign In"
-          onPress={() => signIn()}
-        />
-        </View> */}
-
       </View>
     );
 }

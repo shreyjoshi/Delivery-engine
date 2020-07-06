@@ -79,7 +79,7 @@ return(
             reqBody.priceToPlatform = platformPrice;
             reqBody.sellingPrice = sellPrice;
             reqBody.quantity = 1000;
-            reqBody.retailer_id = "RET_000001";
+            reqBody.retailer_id = state.userInfo.userId;
             if(props["item"]["invObj"] && props["item"]["invObj"]["inventoryId"])
               reqBody.inventoryId = props["item"]["invObj"]["inventoryId"];
             props.updateInventory(reqBody);

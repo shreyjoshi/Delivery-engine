@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, StyleSheet,TextInput,Button,Card, ListItem,ScrollView, AsyncStorage } from 'react-native';
-import Constants from 'expo-constants';
-import CardLayout from '../components/CardLayout';
-import TabBarIcon from '../components/TabBarIcon';
-import * as Location from 'expo-location';
+import { Text, View, StyleSheet,ScrollView,Image } from 'react-native';
 import Accordian from '../components/Accordion';
 import { useSelector, useDispatch } from 'react-redux';
 import {SearchBar} from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { ScrollView } from 'react-native-gesture-handler';
-import { setProductList,setInventoryList} from '../redux/appRedux'
-
 
 
 
@@ -58,7 +51,7 @@ export default function App() {
             let orderList = {};
             for(var  i =0;i<response.length;i++){
                 console.log("here 123",response[i]["retailerId"]);
-                if(response[i]["retailerId"] != "RET_000001"){
+                if(response[i]["retailerId"] != state.userInfo.userId){
                     
                     continue;
                     }
@@ -90,10 +83,6 @@ export default function App() {
                         }
                         console.log("finalList",finalList);
                         setOrderList(finalList);
-                        // orderList.map((l, i) => (
-                        //     console.log("l",l,"i",i)
-                        //     ))
-                    // }
 
                 }
             
@@ -115,7 +104,7 @@ export default function App() {
             let orderList = {};
             for(var  i =0;i<response.length;i++){
                 console.log("here 123",response[i]["retailerId"]);
-                if(response[i]["retailerId"] != "RET_000001"){
+                if(response[i]["retailerId"] != state.userInfo.userId){
                     
                     continue;
                     }
@@ -133,7 +122,6 @@ export default function App() {
                     console.log("here");
                     console.log("orderListbefore",orderList);
 
-                    // if(i == response.length-1){
                         console.log("orderList",orderList);
                         setStringProd(JSON.stringify(orderList));
                         // setOrderList(orderList);
@@ -147,55 +135,21 @@ export default function App() {
                         }
                         console.log("finalList",finalList);
                         setOrderList(finalList);
-                        // orderList.map((l, i) => (
-                        //     console.log("l",l,"i",i)
-                        //     ))
-                    // }
+                        
 
                 }
             
             
             }).catch((e)=>{(console.log(e))})
             console.log("hitting again");
-    },300000)
+    },600000)
 
 
     console.log('mounted',token);
   
   }, []);
 
-  const updateSearch = search => {
-    console.log("e.target.value",search)
-    setSearchState({ search });
-  };
-  // const addNote =  note =>
 
-  const signIn = function() {
-    // const { username, password } = this.state;
-    // this.setState({userName:this.state.username});
-    dispatch(addnote(1))
-
-    console.log("this.props.navigation"+props.navigation.navigate("Dashboard"));//navigation.navigate("Dashboard"))
-    // Auth.signIn(username, password)
-    //   .then(user => {
-    //     this.setState({ user });
-    //     console.log('successful sign in!');
-    //   })
-    //   .catch(err => console.log('error signing in!: ', err));
-  }
-
-  // useEffect(() => {
-  //   // console.log("notes"+JSON.stringify(state));
-  //   (async () => {
-  //     let { status } = await Location.requestPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       setErrorMsg('Permission to access location was denied');
-  //     }
-  //
-  //     let location = await Location.getCurrentPositionAsync({});
-  //     setLocation(location);
-  //   })();
-  // });
 
   let text = 'Waiting..';
   if (errorMsg) {
@@ -213,6 +167,12 @@ export default function App() {
         onChangeText={setSearchState}
         value={search}
       />
+    {(orderList==undefined || orderList.length<1) && 
+      <View style={styles.container}>
+      <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
+      <Text style={{color:'red',fontWeight:"400"}}> Check Network or No Orders Till Now</Text>
+      </View>
+    }
     {orderList && orderList.length && orderList.map((l, i) => (
       <Accordian 
                 title = {l.status}
@@ -283,12 +243,6 @@ const styles = StyleSheet.create({
     resizeMode:'contain',
     width:500,
     margin: 7,
-  },
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: '#fff',
-  //   justifyContent: 'center',
-  //   alignItems:'center',
-  //   padding: 16,
-  // },
+  }
+  
 });
