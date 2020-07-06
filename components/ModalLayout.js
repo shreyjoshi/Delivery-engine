@@ -3,12 +3,16 @@ import { Text,View,  Alert,Platform,
   Modal,
   StyleSheet,
   TouchableHighlight,TextInput,Button } from 'react-native';
+  import { useSelector, useDispatch } from 'react-redux';
 
 export default function ModalLayout(props) {
   const [checked,setState] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [sellPrice,setSellPrice] = useState(0);
   const [platformPrice,setPlatformPrice] = useState(0);
+  const state = useSelector(state => state)
+
+  
   useEffect(() => {
     console.log('props["item"]["invObj"]',props["item"]["invObj"]);
     var sellPrice = props["item"]["invObj"] ? +props["item"]["invObj"]["sellingPrice"]:0;

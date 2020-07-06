@@ -40,9 +40,9 @@ export default function Login(props) {
       return;
     }
     var reqObj = {};
-    reqObj.username = "test";
-    reqObj.password = "test";
-    props.navigation.navigate('Root');
+    reqObj.username = userName;
+    reqObj.password = password;
+    // props.navigation.navigate('Root');
     fetch("https://www.grocyshop.in/authenticate",{
       method: "POST",
       body:JSON.stringify(reqObj),

@@ -130,7 +130,6 @@ export default function CardLayout(props) {
     if(l.added == true)
     return(<ListItem
       containerStyle={{width:'100%'}}
-      contentContainerStyle = {{width:1200}}
       key={l.id}
       leftAvatar={{ source: { uri: "https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(S).png" },rounded:false }}
       title={l.productName}
@@ -155,7 +154,6 @@ export default function CardLayout(props) {
     else  
     return(<ListItem
       containerStyle={{width:'100%'}}
-      contentContainerStyle = {{width:1200}}
       key={l.id}
       leftAvatar={{ source: { uri: "https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(S).png" },rounded:false }}
       title={l.productName}
