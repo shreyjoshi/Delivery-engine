@@ -9,8 +9,10 @@ import MainScreen from '../screens/MainScreen';
 import InventoryScreen2 from '../screens/InventoryScreen2';
 import NotificationScreen from '../screens/NotificationScreen';
 
+import ProfileScreen from '../screens/ProfileScreen';
+
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Products';
+const INITIAL_ROUTE_NAME = 'Profile';
 
 export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -23,21 +25,21 @@ export default function BottomTabNavigator({ navigation, route }) {
       activeTintColor: 'red',
     }}>
       <BottomTab.Screen
-        name="Products"
-        component={MainScreen}
+        name="Profile"
+        component={ProfileScreen}
         
         options={{
-          title: 'Products',
+          title: "Profile",
           backgroundColor:"red",
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} backgroundColor={"red"} name="md-folder" />
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} backgroundColor={"red"} name="ios-person" />
 
         }}
       />
       <BottomTab.Screen
-        name="Inventory"
+        name="Home"
         component={InventoryScreen2}
         options={{
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} backgroundColor={"red"} name="md-add-circle" />,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} backgroundColor={"red"} name="md-home" />,
         }}
       />
       <BottomTab.Screen
@@ -56,10 +58,10 @@ function getHeaderTitle(route) {
   const routeName = route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME;
 
   switch (routeName) {
-    case 'Products':
-      return 'Products';
-    case 'Inventory':
-      return 'Inventory';
+    case 'Profile':
+      return 'Profile';
+    case 'Home':
+      return 'Home';
     case 'Notification':
       return 'Orders';
   }

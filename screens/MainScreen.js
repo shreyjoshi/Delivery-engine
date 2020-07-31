@@ -150,6 +150,10 @@ export default function App(props) {
       />
       ))
       }
+      
+    <View style={styles.container}>
+      
+    </View>  
 
     </ScrollView>
     </SafeAreaView>
