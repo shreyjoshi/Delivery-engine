@@ -10,6 +10,7 @@ import InventoryScreen2 from '../screens/InventoryScreen2';
 import NotificationScreen from '../screens/NotificationScreen';
 
 import ProfileScreen from '../screens/ProfileScreen';
+import MyHomeScreen from '../screens/MyHomeScreen';
 
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Profile';
@@ -37,7 +38,7 @@ export default function BottomTabNavigator({ navigation, route }) {
       />
       <BottomTab.Screen
         name="Home"
-        component={InventoryScreen2}
+        component={MyHomeScreen}
         options={{
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} backgroundColor={"red"} name="md-home" />,
         }}
@@ -61,7 +62,7 @@ function getHeaderTitle(route) {
     case 'Profile':
       return 'Profile';
     case 'Home':
-      return 'Home';
+      return 'MyHomeScreen';
     case 'Notification':
       return 'Orders';
   }

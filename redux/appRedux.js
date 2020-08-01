@@ -12,6 +12,7 @@ export const ADD_INVENTORY = "ADD_INVENTORY"
 export const UPDATE_INVENTORY = "UPDATE_INVENTORY"
 export const DELETE_INVENTORY = "DELETE_INVENTORY"
 export const ADD_USER_NAME = "ADD_USER_NAME"
+export const ADD_USER_INFO = "ADD_USER_INFO"
 // Action Creators
 
 let noteID = 0;
@@ -84,9 +85,19 @@ export function addUserToken(id){
   app_state.userToken = id;
 }
 
+//delivery
+
+export function setUserDetail(id){
+  console.log("setUserDetail",id);
+  return{
+    type: ADD_USER_INFO,
+    id:id
+  }
+}
+
 // reducer
 
-let initialState = {products:{},category:[],inventory:[],items:[],orders:[],userInfo:{}}
+let initialState = {products:{},category:[],inventory:[],items:[],orders:[],userInfo:{}, userDetails:{}}
 
 function notesReducer(state = initialState, action) {
   switch (action.type) {
@@ -188,6 +199,13 @@ function notesReducer(state = initialState, action) {
         ...state,
         inventory:deletedNewArray
       }
+
+    case ADD_USER_INFO:
+      console.log("action.id user",action.id);
+      return{
+        ...state,
+        userDetails:action.id
+      }  
 
     default:
       return state

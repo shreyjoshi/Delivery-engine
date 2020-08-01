@@ -3,11 +3,12 @@ import { Text, View, StyleSheet,ScrollView,Image,Switch,TextInput } from 'react-
 import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {SearchBar} from 'react-native-elements';
+import { setUserDetail} from '../redux/appRedux'
 
 export default function App(props) {
   const state = useSelector(state => state);
   const dispatch = useDispatch();
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState('');
   const [userDetails, setUserDetails] = useState(true);
 
   const toggleSwitch = (() => {
@@ -46,7 +47,8 @@ export default function App(props) {
       console.log("delivery person"+JSON.stringify(response));
       console.log("response.firstNme"+ response.firstNme)
       setIsEnabled(previousState => response.active)
-      dispatch(setUserDetails(response));
+      setUserDetails(response);
+      dispatch(setUserDetail(response));
      
     }).catch((e) => {
       console.log(e);
