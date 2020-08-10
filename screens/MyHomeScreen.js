@@ -229,7 +229,7 @@ export default function App(props){
     );
     
     const HaveOrder = () => (
-        <View>
+        <View style={{height: 200, marginTop:200}}>
             <Text>Order Id : {activeOrder.orderId}</Text>
             {pickupStatus ? 
                 <>
@@ -270,12 +270,12 @@ export default function App(props){
     );
     return(
         <SafeAreaView>
-            <View style ={{flex: 2 ,flexDirection: 'column',justifyContent: 'space-between', alignItems:'flex-start', alignSelf:'stretch'}}>
+            <View style ={{marginTop:50, flex: 1 ,flexDirection: 'column',justifyContent: 'space-between', alignItems:'flex-start', alignSelf:'stretch'}}>
                 <Text>Current Location:</Text>
                 <Separator/>
-                <View style ={{flex: 1 ,flexDirection: 'row',justifyContent: 'space-between', alignItems:'center', alignSelf:'stretch'}}>
+                <View style ={{marginTop:60,flex:1 ,flexDirection: 'row',justifyContent:'space-between', alignItems:'center'}}>
                     
-                    <Text>{userDetails.currentLatitude}</Text>
+                    <Text style={{padding:30}}>{userDetails.currentLatitude}</Text>
                     <Button
                         title="Refresh"
                         onPress={getCurrentLocation}
