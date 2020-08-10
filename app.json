@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Grocy Shop Partner",
-    "description": "Grocy Shop retail partner Application",
-    "slug": "Grocy-Shop-Partner",
+    "name": "Grocy Shop Delivery",
+    "description": "Grocy Shop delivery partner Application",
+    "slug": "Grocy-Shop-Delivery",
     "platforms": [
       "ios",
       "android",
@@ -18,7 +18,7 @@
       "backgroundColor": "#ffffff"
     },
     "android": {
-      "package": "com.grocyshop.grocyshoppartner"
+      "package": "com.grocyshop.deliverypartner"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
