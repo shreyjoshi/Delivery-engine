@@ -4,6 +4,8 @@ import { Text, View,Button,TouchableOpacity,LayoutAnimation, StyleSheet,ScrollVi
 import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {SearchBar} from 'react-native-elements';
+import * as Location from 'expo-location';
+import { setUserDetail} from '../redux/appRedux'
 
 const Separator = () => (
     <View style={styles.separator} />
@@ -17,6 +19,9 @@ export default function App(props){
     const [activeOrder, setActiveOrder] = useState('');
     const [pickupStatus, setPickupStatus] = useState('');
     const [expanded, setExpanded] = useState(false);
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
+
     var order = {   
     "orderId": "O_000004",
     "retailerId": "RET_000001",
@@ -69,18 +74,91 @@ export default function App(props){
     ]
     }
     useEffect(() => {
+        
         setUserDetails(state.userDetails);
-        setActiveOrder(order)
-        setPickupStatus(true)
+        console.log("userDetails "+state.userDetails)
+
+        if(state.userDetails.activeOrder !== undefined && state.userDetails.activeOrder !== null){
+            fetch("https://www.grocyshop.in/api/v1/order/getOrder/"+state.userDetails.activeOrder,{
+                method:"GET",
+                headers:{
+                    "Content-type": "application/json; charset=UTF-8",
+                    'Authorization': 'Bearer ' + state.userInfo.token,
+                    "Access-Control-Allow-Origin": "http://localhost:5000",
+                }
+                }).then((response)=>{
+                if(!response.ok) throw new Error(response.status);
+                else return response.json();
+                }).then((response)=>{
+                console.log("active orders"+JSON.stringify(response));
+                setPickupStatus(false);
+                setActiveOrder(response);
+                console.log("active "+response);
+                for(var i=0; i< response.status.length; i++){
+                    if(response.status[i].status == 'PICKED'){
+                        console.log("status number "+i+" at id "+response.status[i].id);
+                        setPickupStatus(true);
+                    }
+                    
+                }
+                }).catch((e) => {
+                console.log(e);
+            })
+        }
+        //setActiveOrder(order)
+        
         if (Platform.OS === 'android') {
             UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }, []);
 
     const getCurrentLocation = () => {
-        alert(activeOrder)
-        setActiveOrder(order)
         console.log("fetching current location");
+        if (Platform.OS === 'android' && !Constants.isDevice) {
+            setErrorMsg(
+              'Oops, this will not work on Sketch in an Android emulator. Try it on your device!'
+            );
+          } else {
+            (async () => {
+              let { status } = await Location.requestPermissionsAsync();
+              if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+              }
+              console.log("getting location from google!");
+              let location = await Location.getCurrentPositionAsync({});
+              setLocation(location);
+              console.log("location --> "+JSON.stringify(location))
+              console.log("old user location --> "+JSON.stringify(userDetails))
+              if(userDetails.currentLatitude !== location.coords.latitude 
+                    || userDetails.currentLongitude !== location.coords.longitude){
+                        userDetails.currentLatitude = location.coords.latitude;
+                        userDetails.currentLongitude = location.coords.longitude;
+                console.log("Updated location details --> "+JSON.stringify(userDetails)); 
+                fetch("https://www.grocyshop.in/api/v1/delivery/addDeliveryBoy",{
+                    method:"POST",
+                    body:JSON.stringify(userDetails),
+                    headers:{
+                      "Content-type": "application/json; charset=UTF-8",
+                      'Authorization': 'Bearer ' + state.userInfo.token,
+                      "Access-Control-Allow-Origin": "http://localhost:5000",
+                    }
+                  }).then((response)=>{
+                    if(!response.ok) throw new Error(response.status);
+                    else return response.json();
+                  }).then((response)=>{
+                    console.log("delivery person"+JSON.stringify(response));
+                    console.log("response.firstNme"+ response.firstNme)
+                    setIsEnabled(previousState => response.active)
+                    setUserDetails(response);
+                    dispatch(setUserDetail(response));
+                   
+                  }).catch((e) => {
+                    console.log(e);
+                  })
+                dispatch(setUserDetail(userDetails));     
+              }
+            })();
+          };
      };
 
     const toggleExpand=()=>{
@@ -97,13 +175,52 @@ export default function App(props){
         <View style={styles.item}>
           <Text style={styles.title}>{item.itemNum}</Text>
           <Text style={styles.title}>{item.inventoryId}</Text>
-          <Button 
+          {/* <Button 
             title="Not Available"
             onPress={() => updateItemOfOrder(item.itemNum)}
-          />
+          /> */}
         </View>
     );
-    
+    const updateStatus = (status) => {
+        //to update the status
+        //!!!!!HAVE to CHANGE API
+        var reqBody ={
+            "orderId": activeOrder.orderId,
+            "retailerId": activeOrder.retailerId,
+            "customerId": activeOrder.customerId,
+            "status": status
+        };
+        fetch("https://www.grocyshop.in/api/v1/order/newStatus",{
+            method:"POST",
+            body:JSON.stringify(reqBody),
+            headers:{
+                "Content-type": "application/json; charset=UTF-8",
+                'Authorization': 'Bearer ' + state.userInfo.token,
+                "Access-Control-Allow-Origin": "http://localhost:5000",
+            }
+            }).then((response)=>{
+            if(!response.ok) throw new Error(response.status);
+            else return response.json();
+            }).then((response)=>{
+            console.log("delivery person"+JSON.stringify(response));
+            setPickupStatus(false)
+            setActiveOrder(response)
+            for(var i=0; i< response.status.length; i++){
+                if(response.status[i].status == 'PICKED'){
+                    console.log("status number "+i+" at id "+response.status[i].id);
+                    setPickupStatus(true);
+                }
+                
+            }
+            }).catch((e) => {
+            console.log(e);
+        });
+        
+    }
+
+    const recordPayment = () =>{
+      updateStatus("DELIVERED");
+    }
     const NoOrder = () => (
         <View style={styles.container}>
             <Image style={styles.image} source = {{uri:'https://emart-grocery.s3.ap-south-1.amazonaws.com/app-img/GSLogoMain+(M).png'}} />
@@ -117,13 +234,14 @@ export default function App(props){
             {pickupStatus ? 
                 <>
                     <Text>Drop address : {activeOrder.address}</Text>
-                    {activeOrder.paymentStatus == "COD" ? 
+                    {activeOrder.paymentStatus !== "COD" ? 
                         <>
+                            <Text>Amount to be collected - {activeOrder.totalCartValue}</Text>
                             <Button title="Record Payment" onPress ={()=> recordPayment()} />
                         </>
                         :
                         <>
-                            <Button title="Delivered" onPress ={()=> updateStatus()} />
+                            <Button title="Delivered" onPress ={()=> updateStatus("DELIVERED")} />
                         </>
                     }
                 </>
@@ -140,9 +258,9 @@ export default function App(props){
                             renderItem={renderItem}
                             keyExtractor={item => ""+item.itemNum}
                         />
-                       
+                        <Button title="confirm" onPress={() => updateStatus("PICKED")}/>
                     </View>
-                    <Button title="confirm" onPress={() => updateStatus()}/>
+                    
                     </View>
                 </>
             }
